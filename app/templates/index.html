@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ứng Dụng In Nội Dung</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .message {
+            margin-top: 20px;
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <h1>Nhập Nội Dung Cần In</h1>
+    <textarea id="content" placeholder="Nhập nội dung cần in..."></textarea><br>
+    <button onclick="sendPrintRequest()">In Nội Dung</button>
+    
+    <div class="message" id="message"></div>
+
+    <script>
+        function sendPrintRequest() {
+            const content = document.getElementById('content').value;
+
+            // Đảm bảo rằng nội dung không rỗng
+            if (!content) {
+                document.getElementById('message').textContent = "Vui lòng nhập nội dung in.";
+                document.getElementById('message').style.color = 'red';
+                return;
+            }
+
+            // Gửi yêu cầu POST với dữ liệu JSON
+            fetch('http://localhost:5001/print', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json; charset=UTF-8',
+                },
+                body: JSON.stringify({ content: content }), // Nội dung in dưới dạng JSON
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('Lỗi yêu cầu, không nhận được phản hồi hợp lệ.');
+                }
+            })
+            .then(data => {
+                document.getElementById('message').textContent = "Nội dung in đã được gửi thành công!";
+                document.getElementById('message').style.color = 'green';
+            })
+            .catch(error => {
+                console.error("Lỗi khi gửi yêu cầu:", error);
+                document.getElementById('message').textContent = "Có lỗi xảy ra. Vui lòng thử lại.";
+                document.getElementById('message').style.color = 'red';
+            });
+        }
+    </script>
+</body>
+</html>
